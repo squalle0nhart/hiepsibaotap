@@ -76,11 +76,8 @@ class PostListState extends State<PostListView>
             itemBuilder: (BuildContext context, int index) {
               return new GestureDetector(
                 child: new Card(
-                    margin: EdgeInsets.only(left: 5, right: 5),
-                    elevation: 0,
-                    shape: Border(
-                        top: BorderSide(color: Colors.grey, width: 0.1),
-                        bottom: BorderSide(color: Colors.grey, width: 0.1)),
+                    margin: EdgeInsets.only(left: 5, right: 5, bottom: 10),
+                    elevation: 1,
                     child: new Container(
                       height: 350,
                       child: _buildPosts(context, listPosts[index]),
@@ -225,26 +222,20 @@ class PostListState extends State<PostListView>
         _buildPreviewImg(postInfo),
         Html(
           defaultTextStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              fontSize: 16),
+              fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 14),
           backgroundColor: Colors.white,
           data: postInfo.title,
+          useRichText: true,
           padding: EdgeInsets.all(10.0),
         ),
         Container(
-          margin: EdgeInsets.only(bottom: 5),
+          margin: EdgeInsets.only(left: 10),
           child: new Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              IconButton(
-                padding: EdgeInsets.only(bottom: 5),
-                onPressed: () {},
-                icon: Icon(Icons.date_range,
-                    color: Colors.grey[600], size: 20),
-              ),
+              Icon(Icons.date_range, color: Colors.grey[600], size: 20),
               Text(
-                postInfo.date,
+                '  ' + postInfo.date,
                 style: TextStyle(
                     color: Colors.grey[600],
                     fontWeight: FontWeight.normal,
@@ -252,24 +243,24 @@ class PostListState extends State<PostListView>
               ),
               (queryString != '_bookmarked')
                   ? ((postInfo.bookmark == 'true')
-                  ? new IconButton(
-                  icon: new Icon(Icons.bookmark,
-                      color: Colors.blueGrey),
-                  onPressed: () {
-                    setState(() {
-                      postInfo.bookmark = 'false';
-                    });
-                    dbHelper.updatePost(postInfo);
-                  })
-                  : new IconButton(
-                  icon: new Icon(Icons.bookmark_border,
-                      color: Colors.blueGrey),
-                  onPressed: () {
-                    setState(() {
-                      postInfo.bookmark = 'true';
-                    });
-                    dbHelper.updatePost(postInfo);
-                  }))
+                      ? new IconButton(
+                          icon:
+                              new Icon(Icons.bookmark, color: Colors.blueGrey),
+                          onPressed: () {
+                            setState(() {
+                              postInfo.bookmark = 'false';
+                            });
+                            dbHelper.updatePost(postInfo);
+                          })
+                      : new IconButton(
+                          icon: new Icon(Icons.bookmark_border,
+                              color: Colors.blueGrey),
+                          onPressed: () {
+                            setState(() {
+                              postInfo.bookmark = 'true';
+                            });
+                            dbHelper.updatePost(postInfo);
+                          }))
                   : Text('')
             ],
           ),
@@ -281,17 +272,15 @@ class PostListState extends State<PostListView>
 
   Widget _buildPreviewImg(PostInfo postInfo) {
     return new Container(
-      margin: EdgeInsets.only(left: 10, right: 10),
-      decoration: new BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          border: new Border.all(color: Colors.grey)),
       child: new ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(5), topRight: Radius.circular(5)),
         child: new CachedNetworkImage(
             fadeInDuration: Duration(milliseconds: 500),
             fit: BoxFit.cover,
             imageUrl: postInfo.thumbnailInfo,
             width: MediaQuery.of(context).size.width,
+            height: 245,
             placeholder: (context, str) {
               return new Stack(
                 alignment: Alignment.bottomCenter,
