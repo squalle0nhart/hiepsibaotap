@@ -3,6 +3,8 @@ import 'package:hiepsibaotap/ui/view/post_list_view.dart';
 import 'package:hiepsibaotap/utils/theme_change_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:hiepsibaotap/bloc/category_bloc.dart';
+import 'package:hiepsibaotap/modal/categories_info.dart';
 
 class DashBoard extends StatefulWidget {
   @override
@@ -14,16 +16,45 @@ class _DashBoardState extends State<DashBoard>
   Widget screenView;
   AnimationController sliderAnimationController;
   TabController _tabController;
+  CategoryBloc _categoryBloc = new CategoryBloc();
+  List<CategoryInfo> listCategory;
+  bool isLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(length: 4, vsync: this);
+    _categoryBloc.getListCategory().then((result) {
+      listCategory = result;
+      setState(() {
+        isLoaded = true;
+        _tabController =
+            new TabController(length: listCategory.length, vsync: this);
+      });
+    });
+  }
+
+  List<Widget> _generateTab() {
+    List<Widget> listTab = new List<Widget>();
+    for (int i = 0; i < listCategory.length; i++){
+      listTab.add(Tab(child: Text(listCategory[i].title)));
+    }
+    return listTab;
+  }
+
+  List<Widget> _generatePage() {
+    List<Widget> listTab = new List<Widget>();
+    for (int i = 0; i < listCategory.length; i++){
+      listTab.add(PostListView(
+        categoryId: listCategory[i].id,
+        maxPostCount: 9999,
+        queryString: '',
+      ));
+    }
+    return listTab;
   }
 
   @override
   Widget build(BuildContext context) {
-    double statusBarHeight = MediaQuery.of(context).padding.top;
     return ChangeNotifierProvider(
         create: (context) => ThemeChangeNotifier(),
         child: Consumer<ThemeChangeNotifier>(builder: (context, theme, child) {
@@ -35,160 +66,56 @@ class _DashBoardState extends State<DashBoard>
                 systemNavigationBarIconBrightness:
                     Brightness.dark, //navigation bar icons' color
               ),
-              child: Container(
-                  margin: EdgeInsets.only(top: statusBarHeight),
-                  child: Scaffold(
-                    drawer: Drawer(
-                      child: ListView(
-                        padding: EdgeInsets.zero,
+              child: Scaffold(
+                body: isLoaded
+                    ? Stack(
                         children: <Widget>[
-                          DrawerHeader(
-                            child: Text('Drawer Header'),
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
+                          NestedScrollView(
+                            headerSliverBuilder: (BuildContext context,
+                                bool innerBoxIsScrolled) {
+                              return <Widget>[
+                                SliverAppBar(
+                                  floating: true,
+                                  snap: true,
+                                  pinned: true,
+                                  bottom: PreferredSize(
+                                    preferredSize: Size(0, kToolbarHeight),
+                                    child: TabBar(
+                                      isScrollable: true,
+                                      controller: _tabController,
+                                      tabs: _generateTab(),
+                                    ),
+                                  ),
+                                ),
+                              ];
+                            },
+                            body: TabBarView(
+                              controller: _tabController,
+                              children: _generatePage(),
+                              physics: NeverScrollableScrollPhysics(),
                             ),
                           ),
-                          ListTile(
-                            title: Text('Item 1'),
-                            onTap: () {
-                              // Update the state of the app.
-                              // ...
-                            },
-                          ),
-                          ListTile(
-                            title: Text('Item 2'),
-                            onTap: () {
-                              // Update the state of the app.
-                              // ...
-                            },
+                          Positioned(
+                            top: 0.0,
+                            left: 0.0,
+                            right: 0.0,
+                            child: MediaQuery.removePadding(
+                              context: context,
+                              removeBottom: true,
+                              child: AppBar(
+                                automaticallyImplyLeading: true,
+                                elevation: 0,
+                                title: Text("Hiệp sĩ bão táp"),
+                                centerTitle: true,
+                              ),
+                            ),
                           ),
                         ],
+                      )
+                    : Center(
+                        child: Text('Loading'),
                       ),
-                    ),
-                    body: NestedScrollView(
-                      headerSliverBuilder: (context, innerBoxScroll) {
-                        return <Widget>[
-                          SliverAppBar(
-                            backgroundColor: Colors.transparent,
-                            elevation: 0,
-                            expandedHeight: 10.0,
-                            floating: true,
-                            pinned: false,
-                            primary: false,
-                            iconTheme: IconThemeData(color: Colors.grey),
-                            centerTitle: true,
-                            actions: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(right: 15),
-                                child: Icon(
-                                  Icons.search,
-                                ),
-                              )
-                            ],
-                            flexibleSpace: FlexibleSpaceBar(
-                              collapseMode: CollapseMode.parallax,
-                              centerTitle: true,
-                              title: Text("Hiệp sĩ bão táp",
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 16.0,
-                                  )),
-                            ),
-                          ),
-                        ];
-                      },
-                      body: Container(
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: <Widget>[
-                            PostListView(
-                              categoryId: '',
-                              maxPostCount: 9999,
-                              queryString: '',
-                            ),
-                            Text(''),
-                            Text(''),
-                            Text(''),
-                          ],
-                        ),
-                      ),
-                    ),
-                    bottomNavigationBar: BottomAppBar(
-                      clipBehavior: Clip.antiAlias,
-                      child: Container(
-                        padding: EdgeInsets.only(right: 5, left: 5),
-                        height: 50,
-                        child: TabBar(
-                          labelColor: Colors.blue,
-                          controller: _tabController,
-                          tabs: <Widget>[
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Icon(Icons.home),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Text("Trang chủ",
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400)),
-                                ]),
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Icon(Icons.assignment),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Text(
-                                    "Chủ đề",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ]),
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Icon(Icons.feedback),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Text("Góp ý",
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400)),
-                                ]),
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Icon(Icons.settings),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  new Text("Cài đặt",
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400)),
-                                ]),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )));
+              ));
         }));
   }
 }

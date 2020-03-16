@@ -4,6 +4,7 @@ import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:hiepsibaotap/ui/screens/dash_board.dart';
 
 Future<Null> main() async {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   runApp(MyApp());
 }
 
