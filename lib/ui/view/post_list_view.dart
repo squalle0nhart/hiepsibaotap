@@ -48,7 +48,7 @@ class PostListState extends State<PostListView>
   void initState() {
     super.initState();
     _refreshController = new RefreshController();
-    getListPost(null);
+    getListPost();
   }
 
   @override
@@ -68,20 +68,19 @@ class PostListState extends State<PostListView>
           child: CircularProgressIndicator(backgroundColor: Colors.blue));
     } else {
       return new SmartRefresher(
-        enablePullDown: false,
+        enablePullDown: true,
         enablePullUp: enableLoadMore,
         controller: _refreshController,
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
         child: new ListView.builder(
             itemCount: listPosts.length,
             itemBuilder: (BuildContext context, int index) {
               return new GestureDetector(
-                child: new Card(
-                    margin: EdgeInsets.only(left: 5, right: 5, bottom: 10),
-                    elevation: 1,
-                    child: new Container(
-                      height: 350,
-                      child: _buildPosts(context, listPosts[index]),
-                    )),
+                child: new Container(
+                  height: 400,
+                  child: _buildPosts(context, listPosts[index]),
+                ),
                 onTap: () => _listOnTap(context, listPosts[index]),
               );
             }),
@@ -92,7 +91,7 @@ class PostListState extends State<PostListView>
   /*
    * Fetch list of category from wordpress API
    */
-  Future<bool> getListPost(bool up) async {
+  Future<bool> getListPost() async {
     if (queryString != '' && queryString != null) {
       print('load query' + queryString.toString());
       Future<List<PostInfo>> fetchList;
@@ -187,7 +186,7 @@ class PostListState extends State<PostListView>
           listPosts.length, categoryId, queryString);
       fetchList.then((listFetch) {
         for (int i = 0; i < listFetch.length; i++) {
-          // if fetchPost doesnt cached
+          // if fetchPost doesn't cached
           if (!listPostIds.contains(int.parse(listFetch[i].id))) {
             dbHelper.addPostToCache(listFetch[i]);
             setState(() {
@@ -219,62 +218,115 @@ class PostListState extends State<PostListView>
   Column _buildPosts(BuildContext context, PostInfo postInfo) {
     return Column(
       children: <Widget>[
+        _buildAuthor(postInfo),
         _buildPreviewImg(postInfo),
         Html(
           defaultTextStyle: TextStyle(
               fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 14),
-          backgroundColor: Colors.white,
           data: postInfo.title,
           useRichText: true,
-          padding: EdgeInsets.all(10.0),
+          padding: EdgeInsets.only(left: 5, top: 5),
         ),
         Container(
-          margin: EdgeInsets.only(left: 10),
+          padding: EdgeInsets.only(left: 5, right: 5, bottom: 10, top: 15),
           child: new Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Icon(Icons.date_range, color: Colors.grey[600], size: 20),
+              Icon(Icons.open_in_new, color: Colors.grey[600], size: 20),
               Text(
-                '  ' + postInfo.date,
+                '  ' + 'Mở',
                 style: TextStyle(
                     color: Colors.grey[600],
                     fontWeight: FontWeight.normal,
                     fontSize: 14),
               ),
+              Text('     '),
               (queryString != '_bookmarked')
                   ? ((postInfo.bookmark == 'true')
-                      ? new IconButton(
-                          icon:
-                              new Icon(Icons.bookmark, color: Colors.blueGrey),
-                          onPressed: () {
+                      ? new InkWell(
+                          child: new Icon(
+                            Icons.star,
+                            color: Colors.grey[600],
+                            size: 22,
+                          ),
+                          onTap: () {
                             setState(() {
                               postInfo.bookmark = 'false';
                             });
                             dbHelper.updatePost(postInfo);
                           })
-                      : new IconButton(
-                          icon: new Icon(Icons.bookmark_border,
-                              color: Colors.blueGrey),
-                          onPressed: () {
+                      : new InkWell(
+                          child: new Icon(
+                            Icons.star_border,
+                            color: Colors.grey[600],
+                            size: 22
+                          ),
+                          onTap: () {
                             setState(() {
                               postInfo.bookmark = 'true';
                             });
                             dbHelper.updatePost(postInfo);
                           }))
-                  : Text('')
+                  : Text(''),
+              Text(
+                'Đánh dấu',
+                style: TextStyle(
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14),
+              ),
             ],
           ),
           alignment: Alignment.centerLeft,
+        ),
+        Container(
+          width: 10000,
+          height: 0.15,
+          color: Colors.blueGrey,
         )
       ],
     );
   }
 
+  Widget _buildAuthor(PostInfo postInfo) {
+    return Container(
+      padding: EdgeInsets.only(top: 7, bottom: 2, left: 7),
+      child: Row(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100.0),
+            child: CachedNetworkImage(
+              imageUrl: postInfo.authorAvatar,
+              width: 42,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                '   ' + postInfo.author,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 5),
+                child: Text(
+                  '   ' +
+                      postInfo.date.substring(0, postInfo.date.indexOf(' ')),
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _buildPreviewImg(PostInfo postInfo) {
     return new Container(
+      padding: EdgeInsets.only(top: 10, bottom: 5, left: 5, right: 5),
       child: new ClipRRect(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+        borderRadius: BorderRadius.all(Radius.circular(5)),
         child: new CachedNetworkImage(
             fadeInDuration: Duration(milliseconds: 500),
             fit: BoxFit.cover,
@@ -324,6 +376,23 @@ class PostListState extends State<PostListView>
             }),
       ),
     );
+  }
+
+  void _onRefresh() {
+    currentPage = 1;
+    isRefresh = true;
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        initLoad = true;
+        listPosts.clear();
+        getListPost();
+      });
+    });
+  }
+
+  void _onLoading() {
+    isRefresh = false;
+    getListPost();
   }
 
   // handle tap click

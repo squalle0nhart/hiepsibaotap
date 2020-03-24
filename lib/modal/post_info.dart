@@ -9,6 +9,7 @@ class PostInfo {
   String excerpt;
   String thumbnailInfo;
   String author;
+  String authorAvatar;
   String categoryId;
   String url;
   String intDate;
@@ -16,7 +17,7 @@ class PostInfo {
 
   PostInfo(this.id, this.type, this.slug, this.status, this.title, this.content,
       this.date, this.excerpt,
-      this.thumbnailInfo, this.author, this.categoryId, this.url, this.intDate, this.bookmark);
+      this.thumbnailInfo, this.author, this.authorAvatar, this.categoryId, this.url, this.intDate, this.bookmark);
 
   factory PostInfo.fromJson(Map<String, dynamic> json) {
     String attachment = 'https://flutter.io/images/catalog-widget-placeholder.png';
@@ -30,8 +31,9 @@ class PostInfo {
       attachment = sizes['full']['source_url'].toString();
     }
     print('-------------');
-    print(attachment.toString());
     String author = json['_embedded']['author'][0]['name'];
+    String authorAvatar = json['_embedded']['author'][0]['avatar_urls']['24'];
+    print(json['_embedded']['author'][0].toString());
 
     return new PostInfo(
         json['id'].toString(),
@@ -44,6 +46,7 @@ class PostInfo {
         json['excerpt']["rendered"].toString(),
         attachment,
         author,
+        authorAvatar,
         json['categories'][0].toString(),
         json['link'],
         DateTime.parse(json['date'].toString().replaceAll("T", " ")).millisecondsSinceEpoch.toString(),
@@ -63,6 +66,7 @@ class PostInfo {
     'status': status,
     'type': type,
     'author': author,
+    'authorAvatar': authorAvatar,
     'categories': categoryId,
     'link': url,
     'bookmark': bookmark

@@ -35,7 +35,7 @@ class _DashBoardState extends State<DashBoard>
 
   List<Widget> _generateTab() {
     List<Widget> listTab = new List<Widget>();
-    for (int i = 0; i < listCategory.length; i++){
+    for (int i = 0; i < listCategory.length; i++) {
       listTab.add(Tab(child: Text(listCategory[i].title)));
     }
     return listTab;
@@ -43,7 +43,7 @@ class _DashBoardState extends State<DashBoard>
 
   List<Widget> _generatePage() {
     List<Widget> listTab = new List<Widget>();
-    for (int i = 0; i < listCategory.length; i++){
+    for (int i = 0; i < listCategory.length; i++) {
       listTab.add(PostListView(
         categoryId: listCategory[i].id,
         maxPostCount: 9999,
@@ -106,7 +106,32 @@ class _DashBoardState extends State<DashBoard>
                                 automaticallyImplyLeading: true,
                                 elevation: 0,
                                 title: Text("Hiệp sĩ bão táp"),
-                                centerTitle: true,
+                                actions: <Widget>[
+                                  IconButton(
+                                    icon: Icon(Icons.help_outline),
+                                    onPressed: () {
+                                      // do search
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.star_half),
+                                    onPressed: () {
+                                      // do search
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.lightbulb_outline),
+                                    onPressed: () {
+                                      // do search
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.search),
+                                    onPressed: () {
+                                      // do search
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                           ),

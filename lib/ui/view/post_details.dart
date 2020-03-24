@@ -41,7 +41,8 @@ class PostDetailState extends State<PostDetail> {
   Widget build(BuildContext context) {
     print(postInfo.url.toString());
     return Scaffold(
-        appBar: _buildAppBar(context, postInfo), body: getBody(isAppView, postInfo));
+        appBar: _buildAppBar(context, postInfo),
+        body: getBody(isAppView, postInfo));
   }
 
   Widget getBody(bool isAppView, PostInfo postInfo) {
@@ -53,72 +54,25 @@ class PostDetailState extends State<PostDetail> {
   }
 
   AppBar _buildAppBar(BuildContext context, PostInfo postInfo) {
-    return AppBar(actions: <Widget>[
-      GestureDetector(
-        child: Container(
-          color: webViewColor,
-          margin: EdgeInsets.only(left: 90, right: 0),
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.language),
-                Text('WebView'),
-              ],
-            ),
-          ),
+    return AppBar(
+        title: Html(
+          defaultTextStyle: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
+          data: postInfo.title,
+          padding: EdgeInsets.all(5),
         ),
-        onTap: () {
-          setState(() {
-            isAppView = false;
-            webViewColor = Colors.blue[700];
-            appViewColor = Colors.blue;
-          });
-        },
-      ),
-      GestureDetector(
-        child: Container(
-          color: appViewColor,
-          margin: EdgeInsets.only(right: 70),
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.chrome_reader_mode),
-                Text('AppView'),
-              ],
+        actions: <Widget>[
+          GestureDetector(
+            child: Container(
+              padding: EdgeInsets.only(left: 10, right: 15),
+              child: Icon(Icons.share, size: 21,),
             ),
-          ),
-        ),
-        onTap: () {
-          setState(() {
-            isAppView = true;
-            appViewColor = Colors.blue[700];
-            webViewColor = Colors.blue;
-          });
-        },
-      ),
-      GestureDetector(
-        child: Container(
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.share),
-                Text('Share'),
-              ],
-            ),
-          ),
-        ),
-        onTap: () {
-          print('share');
-          Share.share(postInfo.url);
-        },
-      )
-    ]);
+            onTap: () {
+              print('share');
+              Share.share(postInfo.url);
+            },
+          )
+        ]);
   }
 }
 
@@ -128,7 +82,6 @@ class WebViewWidget extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return new WebViewState(postInfo);
   }
 
@@ -144,7 +97,6 @@ class WebViewState extends State<WebViewWidget> {
   WebViewState(PostInfo postInfo) {
     this.postInfo = postInfo;
   }
-
 
   @override
   void dispose() {
@@ -194,14 +146,12 @@ class AppViewWidget extends StatefulWidget {
 
 class _AppViewState extends State<AppViewWidget> {
   PostInfo postInfo;
-  bool isAppViewAvailable = true;
   List<PostInfo> listPosts = new List<PostInfo>();
 
   // constructor
   _AppViewState(PostInfo postInfo) {
     this.postInfo = postInfo;
     print('categories id: ' + postInfo.categoryId);
-    isAppViewAvailable = (postInfo.content != '' && postInfo.content != ' ');
     dbHelper.getListCachingPost(postInfo.categoryId).then((listCachingPost) {
       print(listCachingPost.length);
       setState(() {
@@ -212,12 +162,7 @@ class _AppViewState extends State<AppViewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return (isAppViewAvailable)
-        ? _postContent(context, postInfo)
-        : Center(
-            child: Text('AppView Mode not available for this post...'),
-          );
+    return _postContent(context, postInfo);
   }
 
   Widget _postContent(BuildContext context, PostInfo postInfo) {
@@ -298,20 +243,23 @@ class _AppViewState extends State<AppViewWidget> {
                         ),
                         new Center(
                             child: new CircularProgressIndicator(
-                              backgroundColor: Colors.transparent,
-                            ))
+                          backgroundColor: Colors.transparent,
+                        ))
                       ],
                     );
                   },
                   errorWidget: (context, error, obj) {
-                    return  ClipRRect(
+                    return ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(5)),
                         child: new Container(
                           width: 76,
                           height: 110,
                           padding: EdgeInsets.all(5),
                           decoration: new BoxDecoration(
-                            color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
+                            color: Color((math.Random().nextDouble() * 0xFFFFFF)
+                                        .toInt() <<
+                                    0)
+                                .withOpacity(1.0),
                           ),
                           child: Center(
                             child: Html(
