@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../modal/post_info.dart';
 import 'package:share/share.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../database/db_functions.dart' as dbHelper;
 import 'dart:math' as math;
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
@@ -176,6 +175,7 @@ class _AppViewState extends State<AppViewWidget> {
           textStyle: TextStyle(
             fontSize: 15
           ),
+          enableCaching: true,
         ),
         Container(
           child: Divider(color: Colors.blueGrey, height: 0.1),

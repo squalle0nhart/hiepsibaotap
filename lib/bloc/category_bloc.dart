@@ -8,12 +8,11 @@ import 'dart:convert';
 enum Status { START_FETCH, FINISH_FETCH, FETCH_ERROR }
 
 class CategoryBloc {
-//  StreamController _categoryStream = new StreamController();
-//  Stream get categoryStream => _categoryStream.stream;
+  StreamController _categoryStream = new StreamController();
+  Stream get categoryStream => _categoryStream.stream;
 
-  Future<List<CategoryInfo>> getListCategory() async {
+  void getListCategory() async {
     List<CategoryInfo> listCategory = new List<CategoryInfo>();
-    // _categoryStream.sink.add(Status.START_FETCH);
     CategoryInfo top = new CategoryInfo('', '', 'Trang chủ', 9999);
     listCategory.add(top);
 
@@ -25,7 +24,7 @@ class CategoryBloc {
         prefs.setString(AppConfig.PREF_CATEGORY_CACHE, response.body);
       } else {
         prefs.setString(AppConfig.PREF_CATEGORY_CACHE, '');
-        // _categoryStream.sink.add(Status.FETCH_ERROR);
+        _categoryStream.sink.add(Status.FETCH_ERROR);
       }
     }
 
@@ -36,11 +35,10 @@ class CategoryBloc {
         listCategory.add(CategoryInfo.fromJson(result[i]));
       }
     }
-    // _categoryStream.sink.add(listCategory);
-    return listCategory;
+    _categoryStream.sink.add(listCategory);
   }
 
-//  void dispose() {
-//    _categoryStream.close();
-//  }
+  void dispose() {
+    _categoryStream.close();
+  }
 }

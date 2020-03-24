@@ -5,52 +5,29 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:hiepsibaotap/bloc/category_bloc.dart';
 import 'package:hiepsibaotap/modal/categories_info.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 
 class DashBoard extends StatefulWidget {
   @override
   State createState() => _DashBoardState();
 }
 
-class _DashBoardState extends State<DashBoard>
-    with SingleTickerProviderStateMixin {
+class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
   Widget screenView;
   AnimationController sliderAnimationController;
-  TabController _tabController;
   CategoryBloc _categoryBloc = new CategoryBloc();
-  List<CategoryInfo> listCategory;
-  bool isLoaded = false;
+  List<CategoryInfo> listCategory = new List<CategoryInfo>();
 
   @override
   void initState() {
     super.initState();
-    _categoryBloc.getListCategory().then((result) {
-      listCategory = result;
-      setState(() {
-        isLoaded = true;
-        _tabController =
-            new TabController(length: listCategory.length, vsync: this);
-      });
-    });
+    _categoryBloc.getListCategory();
   }
 
-  List<Widget> _generateTab() {
-    List<Widget> listTab = new List<Widget>();
-    for (int i = 0; i < listCategory.length; i++) {
-      listTab.add(Tab(child: Text(listCategory[i].title)));
-    }
-    return listTab;
-  }
-
-  List<Widget> _generatePage() {
-    List<Widget> listTab = new List<Widget>();
-    for (int i = 0; i < listCategory.length; i++) {
-      listTab.add(PostListView(
-        categoryId: listCategory[i].id,
-        maxPostCount: 9999,
-        queryString: '',
-      ));
-    }
-    return listTab;
+  @override
+  void dispose() {
+    super.dispose();
+    _categoryBloc.dispose();
   }
 
   @override
@@ -67,8 +44,18 @@ class _DashBoardState extends State<DashBoard>
                     Brightness.dark, //navigation bar icons' color
               ),
               child: Scaffold(
-                body: isLoaded
-                    ? Stack(
+                body: StreamBuilder(
+                  stream: _categoryBloc.categoryStream,
+                  builder: (context, snapshot) {
+                    print(snapshot.connectionState);
+                    if (
+                    snapshot.connectionState == ConnectionState.active &&
+                    snapshot.data.runtimeType == listCategory.runtimeType &&
+                        snapshot.data.length > 0) {
+                      TabController _tabController = new TabController(
+                          length: snapshot.data.length, vsync: this);
+                      listCategory = snapshot.data;
+                      return Stack(
                         children: <Widget>[
                           NestedScrollView(
                             headerSliverBuilder: (BuildContext context,
@@ -122,7 +109,12 @@ class _DashBoardState extends State<DashBoard>
                                   IconButton(
                                     icon: Icon(Icons.lightbulb_outline),
                                     onPressed: () {
-                                      // do search
+                                      // do change theme
+                                      DynamicTheme.of(context).setBrightness(
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Brightness.light
+                                              : Brightness.dark);
                                     },
                                   ),
                                   IconButton(
@@ -136,11 +128,35 @@ class _DashBoardState extends State<DashBoard>
                             ),
                           ),
                         ],
-                      )
-                    : Center(
-                        child: Text('Loading'),
-                      ),
+                      );
+                    }
+                    return Center(
+                        child: new CircularProgressIndicator(
+                      backgroundColor: Colors.transparent,
+                    ));
+                  },
+                ),
               ));
         }));
+  }
+
+  List<Widget> _generateTab() {
+    List<Widget> listTab = new List<Widget>();
+    for (int i = 0; i < listCategory.length; i++) {
+      listTab.add(Tab(child: Text(listCategory[i].title)));
+    }
+    return listTab;
+  }
+
+  List<Widget> _generatePage() {
+    List<Widget> listTab = new List<Widget>();
+    for (int i = 0; i < listCategory.length; i++) {
+      listTab.add(PostListView(
+        categoryId: listCategory[i].id,
+        maxPostCount: 9999,
+        queryString: '',
+      ));
+    }
+    return listTab;
   }
 }
