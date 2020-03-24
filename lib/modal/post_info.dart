@@ -32,7 +32,7 @@ class PostInfo {
     }
     print('-------------');
     String author = json['_embedded']['author'][0]['name'];
-    String authorAvatar = json['_embedded']['author'][0]['avatar_urls']['24'];
+    String authorAvatar = json['_embedded']['author'][0]['avatar_urls']['48'];
     print(json['_embedded']['author'][0].toString());
 
     return new PostInfo(

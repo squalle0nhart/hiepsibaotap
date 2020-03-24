@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../modal/post_info.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:share/share.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../database/db_functions.dart' as dbHelper;
 import 'dart:math' as math;
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class PostDetail extends StatefulWidget {
   final PostInfo postInfo;
@@ -54,25 +54,27 @@ class PostDetailState extends State<PostDetail> {
   }
 
   AppBar _buildAppBar(BuildContext context, PostInfo postInfo) {
-    return AppBar(
-        title: Html(
-          defaultTextStyle: TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
-          data: postInfo.title,
-          padding: EdgeInsets.all(5),
+    return AppBar(title: HtmlWidget(
+      postInfo.title,
+      textStyle: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.bold
+      ),
+    ), actions: <Widget>[
+      GestureDetector(
+        child: Container(
+          padding: EdgeInsets.only(left: 10, right: 15),
+          child: Icon(
+            Icons.share,
+            size: 21,
+          ),
         ),
-        actions: <Widget>[
-          GestureDetector(
-            child: Container(
-              padding: EdgeInsets.only(left: 10, right: 15),
-              child: Icon(Icons.share, size: 21,),
-            ),
-            onTap: () {
-              print('share');
-              Share.share(postInfo.url);
-            },
-          )
-        ]);
+        onTap: () {
+          print('share');
+          Share.share(postInfo.url);
+        },
+      )
+    ]);
   }
 }
 
@@ -168,12 +170,13 @@ class _AppViewState extends State<AppViewWidget> {
   Widget _postContent(BuildContext context, PostInfo postInfo) {
     return ListView(
       children: <Widget>[
-        new Html(
-            padding: EdgeInsets.all(15.0),
-            data: postInfo.content,
-            onLinkTap: (url) {
-//              _launchInBrowser(url);
-            }),
+        HtmlWidget(
+          postInfo.content,
+          webView: true,
+          textStyle: TextStyle(
+            fontSize: 15
+          ),
+        ),
         Container(
           child: Divider(color: Colors.blueGrey, height: 0.1),
           padding: EdgeInsets.only(left: 10, right: 10, top: 10),
@@ -261,16 +264,16 @@ class _AppViewState extends State<AppViewWidget> {
                                     0)
                                 .withOpacity(1.0),
                           ),
-                          child: Center(
-                            child: Html(
-                              defaultTextStyle: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white,
-                                  fontSize: 14),
-                              data: postInfo.title,
-                              padding: EdgeInsets.all(5),
-                            ),
-                          ),
+                          child: Center(child: Text('')
+//                            Html(
+//                              defaultTextStyle: TextStyle(
+//                                  fontWeight: FontWeight.normal,
+//                                  color: Colors.white,
+//                                  fontSize: 14),
+//                              data: postInfo.title,
+//                              padding: EdgeInsets.all(5),
+//                            ),
+                              ),
                         ));
                   }),
             ),
@@ -280,14 +283,15 @@ class _AppViewState extends State<AppViewWidget> {
           child: new Column(
             children: <Widget>[
               new Container(
-                child: Html(
-                  defaultTextStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 16),
-                  backgroundColor: Colors.white,
-                  data: postInfo.title,
-                  padding: EdgeInsets.all(10.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: HtmlWidget(
+                    postInfo.title,
+                    textStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 14),
+                  ),
                 ),
               ),
               new Expanded(

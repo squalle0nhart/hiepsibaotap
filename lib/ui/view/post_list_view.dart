@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hiepsibaotap/config/app_config.dart';
 import "package:pull_to_refresh/pull_to_refresh.dart";
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'post_details.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../../database/db_functions.dart' as dbHelper;
 
 class PostListView extends StatefulWidget {
@@ -78,7 +78,7 @@ class PostListState extends State<PostListView>
             itemBuilder: (BuildContext context, int index) {
               return new GestureDetector(
                 child: new Container(
-                  height: 400,
+                  height: 410,
                   child: _buildPosts(context, listPosts[index]),
                 ),
                 onTap: () => _listOnTap(context, listPosts[index]),
@@ -220,23 +220,25 @@ class PostListState extends State<PostListView>
       children: <Widget>[
         _buildAuthor(postInfo),
         _buildPreviewImg(postInfo),
-        Html(
-          defaultTextStyle: TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 14),
-          data: postInfo.title,
-          useRichText: true,
-          padding: EdgeInsets.only(left: 5, top: 5),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: HtmlWidget(
+            postInfo.title,
+            textStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16),
+          ),
         ),
         Container(
-          padding: EdgeInsets.only(left: 5, right: 5, bottom: 10, top: 15),
+          padding: EdgeInsets.only(left: 5, right: 5, bottom: 10, top: 5),
           child: new Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Icon(Icons.open_in_new, color: Colors.grey[600], size: 20),
+              Icon(Icons.open_in_new, color: Colors.grey[500], size: 20),
               Text(
                 '  ' + 'Mở',
                 style: TextStyle(
-                    color: Colors.grey[600],
+                    color: Colors.grey[500],
                     fontWeight: FontWeight.normal,
                     fontSize: 14),
               ),
@@ -246,7 +248,7 @@ class PostListState extends State<PostListView>
                       ? new InkWell(
                           child: new Icon(
                             Icons.star,
-                            color: Colors.grey[600],
+                            color: Colors.grey[500],
                             size: 22,
                           ),
                           onTap: () {
@@ -256,11 +258,8 @@ class PostListState extends State<PostListView>
                             dbHelper.updatePost(postInfo);
                           })
                       : new InkWell(
-                          child: new Icon(
-                            Icons.star_border,
-                            color: Colors.grey[600],
-                            size: 22
-                          ),
+                          child: new Icon(Icons.star_border,
+                              color: Colors.grey[500], size: 22),
                           onTap: () {
                             setState(() {
                               postInfo.bookmark = 'true';
@@ -271,7 +270,7 @@ class PostListState extends State<PostListView>
               Text(
                 'Đánh dấu',
                 style: TextStyle(
-                    color: Colors.grey[600],
+                    color: Colors.grey[500],
                     fontWeight: FontWeight.normal,
                     fontSize: 14),
               ),
@@ -362,14 +361,13 @@ class PostListState extends State<PostListView>
                                   0)
                           .withOpacity(1.0),
                     ),
-                    child: Center(
-                      child: Html(
-                        defaultTextStyle: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: Colors.white,
-                            fontSize: 14),
-                        data: postInfo.title,
-                        padding: EdgeInsets.all(5),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: HtmlWidget(
+                        postInfo.title,
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
                       ),
                     ),
                   ));
