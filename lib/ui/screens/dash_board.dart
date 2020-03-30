@@ -47,10 +47,8 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
                 body: StreamBuilder(
                   stream: _categoryBloc.categoryStream,
                   builder: (context, snapshot) {
-                    print(snapshot.connectionState);
-                    if (
-                    snapshot.connectionState == ConnectionState.active &&
-                    snapshot.data.runtimeType == listCategory.runtimeType &&
+                    if (snapshot.connectionState == ConnectionState.active &&
+                        snapshot.data.runtimeType == listCategory.runtimeType &&
                         snapshot.data.length > 0) {
                       TabController _tabController = new TabController(
                           length: snapshot.data.length, vsync: this);
@@ -104,6 +102,18 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
                                     icon: Icon(Icons.star_half),
                                     onPressed: () {
                                       // do search
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                              builder: (context) => Scaffold(
+                                                    appBar: AppBar(
+                                                      title: Text('Đánh dấu'),
+                                                    ),
+                                                    body: new PostListView(
+                                                      categoryId: '',
+                                                      queryString:
+                                                          '_bookmarked',
+                                                    ),
+                                                  )));
                                     },
                                   ),
                                   IconButton(
@@ -153,7 +163,6 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
     for (int i = 0; i < listCategory.length; i++) {
       listTab.add(PostListView(
         categoryId: listCategory[i].id,
-        maxPostCount: 9999,
         queryString: '',
       ));
     }

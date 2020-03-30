@@ -4,6 +4,7 @@ import 'package:share/share.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:math' as math;
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:hiepsibaotap/database/db_functions.dart' as dbHelper;
 
 class PostDetail extends StatefulWidget {
   final PostInfo postInfo;
@@ -152,7 +153,6 @@ class _AppViewState extends State<AppViewWidget> {
   // constructor
   _AppViewState(PostInfo postInfo) {
     this.postInfo = postInfo;
-    print('categories id: ' + postInfo.categoryId);
     dbHelper.getListCachingPost(postInfo.categoryId).then((listCachingPost) {
       print(listCachingPost.length);
       setState(() {

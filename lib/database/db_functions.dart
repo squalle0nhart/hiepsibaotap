@@ -9,7 +9,7 @@ import 'dart:convert';
 
 var dbHelper = DatabaseHelper();
 int perPageInt = 4;
-
+int maxPostCount = 9999;
 List<PostInfo> cachedPosts;
 List<PostInfo> posts;
 int dbCount;
@@ -22,6 +22,10 @@ getCachedPostsIDs() {
   for (int i = 0; i < cachedPosts.length; i++) {
     cachedPostsIDs.add(int.parse(cachedPosts[i].id));
   }
+}
+
+Future<List<PostInfo>> getListCachingPost(String categoryId) async {
+  return await dbHelper.getPostList(categoryId, false);
 }
 
 getPostsIDs() {
@@ -74,10 +78,6 @@ doWeHaveNet() async {
   }
 }
 
-Future<List<PostInfo>> getListCachingPost(String categoryId) async {
-  return await dbHelper.getPostList(categoryId, false);
-}
-
 Future<List<PostInfo>> getListBookmarkPost(String categoryId) async {
   return await dbHelper.getPostList(categoryId, true);
 }
@@ -87,7 +87,7 @@ Future<List<PostInfo>> getListPostWithoutCaching(
   return await getListPost(currentPage, categoryId, queryString);
 }
 
-  /*
+/*
    * Fetch list of category from wordpress API
    */
 getListPost(int offset, String categoryId, String queryString) async {
@@ -109,6 +109,7 @@ getListPost(int offset, String categoryId, String queryString) async {
   }
   print(requestURL);
   final response = await http.get(requestURL);
+  maxPostCount = int.parse(response.headers['X-WP-Total']);
   if (response.statusCode == 200) {
     offset++;
     List<dynamic> result = jsonDecode(response.body);

@@ -36,7 +36,7 @@ class PostBookMarkState extends State<PostBookMark>
     return Scaffold(
       appBar: AppBar(title: Text('Bookmarked Post')),
       backgroundColor: Colors.white, //Color.fromARGB(255, 240, 240, 240),
-      body: new PostListView(categoryId: '', maxPostCount: 1000,queryString: '_bookmarked')
+      body: new PostListView(categoryId: '', queryString: '_bookmarked')
     );
   }
 }

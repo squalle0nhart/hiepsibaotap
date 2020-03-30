@@ -45,7 +45,7 @@ class PostSearchState extends State<PostSearch>
     return Scaffold(
       appBar: AppBar(title: Text('Search result for: "' + searchString + '"')),
       backgroundColor: Colors.white, //Color.fromARGB(255, 240, 240, 240),
-      body: new PostListView(categoryId: '', maxPostCount: 1000,queryString: searchString)
+      body: new PostListView(categoryId: '', queryString: searchString)
     );
   }
 }

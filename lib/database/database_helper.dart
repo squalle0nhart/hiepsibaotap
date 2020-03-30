@@ -14,6 +14,7 @@ class DatabaseHelper {
   String colTitle = 'title';
   String colContent = 'content';
   String colAuthor = 'author';
+  String colAuthorAvatar = 'authorAvatar';
   String colDate = 'date';
   String colImgUrl = 'thumbnailInfo';
   String colSlug = 'slug';
@@ -53,7 +54,7 @@ class DatabaseHelper {
 
   void _createDb(Database db, int newVersion) async {
     await db.execute(
-        'CREATE TABLE $postTable($colId INTEGER PRIMARY KEY, $colCategory TEXT, $colTitle TEXT,$colStatus TEXT, $colType TEXT, $colContent TEXT, $colAuthor TEXT, $colSlug TEXT, $colExcerpt TEXT, $colDate TEXT, $colLink TEXT, $colBookmarked TEXT, $colIntDate TEXT, $colImgUrl TEXT )');
+        'CREATE TABLE $postTable($colId INTEGER PRIMARY KEY, $colCategory TEXT, $colTitle TEXT,$colStatus TEXT, $colType TEXT, $colContent TEXT, $colAuthor TEXT, $colAuthorAvatar TEXT, $colSlug TEXT, $colExcerpt TEXT, $colDate TEXT, $colLink TEXT, $colBookmarked TEXT, $colIntDate TEXT, $colImgUrl TEXT )');
   }
 
   //Fetch : Get all Posts from DB

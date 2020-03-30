@@ -19,4 +19,5 @@ class AppConfig {
 
   //Pref key-value
   static const String PREF_CATEGORY_CACHE = "PREF_CATEGORY_CACHE";
+
 }

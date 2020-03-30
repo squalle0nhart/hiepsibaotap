@@ -30,10 +30,8 @@ class PostInfo {
     } else if (sizes['full'] != null) {
       attachment = sizes['full']['source_url'].toString();
     }
-    print('-------------');
     String author = json['_embedded']['author'][0]['name'];
     String authorAvatar = json['_embedded']['author'][0]['avatar_urls']['48'];
-    print(json['_embedded']['author'][0].toString());
 
     return new PostInfo(
         json['id'].toString(),
@@ -78,6 +76,7 @@ class PostInfo {
     this.title = map['title'].toString();
     this.content = map['content'].toString();
     this.author = map['author'];
+    this.authorAvatar = map['authorAvatar'];
     this.date = map['date'].toString().replaceAll(("T"), " ");
     this.excerpt = map['excerpt'].toString();
     this.status = map['status'].toString();
