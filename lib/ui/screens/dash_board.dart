@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:hiepsibaotap/bloc/category_bloc.dart';
 import 'package:hiepsibaotap/modal/categories_info.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:hiepsibaotap/ui/anim/fade_route.dart';
 
 class DashBoard extends StatefulWidget {
   @override
@@ -103,8 +104,8 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
                                     onPressed: () {
                                       // do search
                                       Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                              builder: (context) => Scaffold(
+                                          .push(FadeRouteBuilder(
+                                              page: Scaffold(
                                                     appBar: AppBar(
                                                       title: Text('Đánh dấu'),
                                                     ),

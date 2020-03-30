@@ -18,7 +18,6 @@ class PostDetail extends StatefulWidget {
 
 class PostDetailState extends State<PostDetail> {
   PostInfo postInfo;
-  bool isAppView = true;
   Color webViewColor = Colors.blue;
   Color appViewColor = Colors.blue[700];
   bool isLoading = false;
@@ -31,7 +30,6 @@ class PostDetailState extends State<PostDetail> {
   void initState() {
     super.initState();
     if (postInfo.content == '' || postInfo.content == ' ') {
-      isAppView = false;
       webViewColor = Colors.blue[700];
       appViewColor = Colors.blue;
     }
@@ -39,18 +37,9 @@ class PostDetailState extends State<PostDetail> {
 
   @override
   Widget build(BuildContext context) {
-    print(postInfo.url.toString());
     return Scaffold(
         appBar: _buildAppBar(context, postInfo),
-        body: getBody(isAppView, postInfo));
-  }
-
-  Widget getBody(bool isAppView, PostInfo postInfo) {
-    if (isAppView) {
-      return AppViewWidget(postInfo: postInfo);
-    } else {
-      return WebViewWidget(postInfo: postInfo);
-    }
+        body: AppViewWidget(postInfo: postInfo));
   }
 
   AppBar _buildAppBar(BuildContext context, PostInfo postInfo) {
@@ -182,7 +171,7 @@ class _AppViewState extends State<AppViewWidget> {
           padding: EdgeInsets.only(left: 10, right: 10, top: 10),
         ),
         Container(
-            child: new Text('Related Post',
+            child: new Text('Bài liên quan',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 textAlign: TextAlign.left),
             padding: EdgeInsets.only(left: 10, top: 5, bottom: 10)),
@@ -204,12 +193,8 @@ class _AppViewState extends State<AppViewWidget> {
         itemCount: maxRelatedPost,
         itemBuilder: (BuildContext context, int index) {
           return new GestureDetector(
-            child: new Card(
+            child: new Container(
                 margin: EdgeInsets.only(left: 5, right: 5),
-                elevation: 0,
-                shape: Border(
-                    top: BorderSide(color: Colors.grey, width: 0.1),
-                    bottom: BorderSide(color: Colors.grey, width: 0.1)),
                 child: new Container(
                   height: 120,
                   child: _buildPosts(context, listPosts[index]),
@@ -241,7 +226,7 @@ class _AppViewState extends State<AppViewWidget> {
                       alignment: Alignment.bottomCenter,
                       children: <Widget>[
                         Image.asset(
-                          'placeholder-image.jpg',
+                          'assets/image/placeholder-image.jpg',
                           fit: BoxFit.cover,
                         ),
                         new Center(
@@ -265,14 +250,6 @@ class _AppViewState extends State<AppViewWidget> {
                                 .withOpacity(1.0),
                           ),
                           child: Center(child: Text('')
-//                            Html(
-//                              defaultTextStyle: TextStyle(
-//                                  fontWeight: FontWeight.normal,
-//                                  color: Colors.white,
-//                                  fontSize: 14),
-//                              data: postInfo.title,
-//                              padding: EdgeInsets.all(5),
-//                            ),
                               ),
                         ));
                   }),
@@ -289,7 +266,6 @@ class _AppViewState extends State<AppViewWidget> {
                     postInfo.title,
                     textStyle: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
                         fontSize: 14),
                   ),
                 ),

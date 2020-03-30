@@ -9,7 +9,6 @@ import 'dart:convert';
 
 var dbHelper = DatabaseHelper();
 int perPageInt = 4;
-int maxPostCount = 9999;
 List<PostInfo> cachedPosts;
 List<PostInfo> posts;
 int dbCount;
@@ -109,7 +108,6 @@ getListPost(int offset, String categoryId, String queryString) async {
   }
   print(requestURL);
   final response = await http.get(requestURL);
-  maxPostCount = int.parse(response.headers['X-WP-Total']);
   if (response.statusCode == 200) {
     offset++;
     List<dynamic> result = jsonDecode(response.body);

@@ -6,6 +6,7 @@ import 'post_details.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:hiepsibaotap/bloc/list_post_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:hiepsibaotap/ui/anim/fade_route.dart';
 
 class PostListView extends StatefulWidget {
   final String categoryId;
@@ -208,7 +209,7 @@ class PostListState extends State<PostListView>
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
                   Image.asset(
-                    'placeholder-image.jpg',
+                    'assets/image/placeholder-image.jpg',
                     fit: BoxFit.cover,
                   ),
                   new Center(
@@ -262,8 +263,7 @@ class PostListState extends State<PostListView>
 
   // handle tap click
   _listOnTap(BuildContext context, PostInfo postInfo) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => new PostDetail(postInfo: postInfo)));
+    Navigator.of(context).push(FadeRouteBuilder(page:  new PostDetail(postInfo: postInfo)));
   }
 
   @override
