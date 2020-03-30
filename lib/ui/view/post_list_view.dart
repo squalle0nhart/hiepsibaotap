@@ -12,10 +12,7 @@ class PostListView extends StatefulWidget {
   final String categoryId;
   final String queryString;
   //constructor
-  PostListView(
-      {Key key,
-      @required this.categoryId,
-      @required this.queryString})
+  PostListView({Key key, @required this.categoryId, @required this.queryString})
       : super(key: key);
 
   @override
@@ -64,9 +61,10 @@ class PostListState extends State<PostListView>
                 itemCount: _postBloc.listPosts.length,
                 itemBuilder: (BuildContext context, int index) {
                   return new GestureDetector(
-                    child: new Container(
-                      height: 410,
-                      child: _buildPosts(context, listPosts[index]),
+                    child: new Wrap(
+                      children: <Widget>[
+                        _buildPosts(context, listPosts[index])
+                      ],
                     ),
                     onTap: () => _listOnTap(context, listPosts[index]),
                   );
@@ -128,21 +126,24 @@ class PostListState extends State<PostListView>
                   }
                   _postBloc.updatePost(postInfo);
                 },
-                child:  (queryString != '_bookmarked') ? Row(
-                  children: <Widget>[
-                    ((postInfo.bookmark == 'true')
-                        ? Icon(Icons.star, color: Colors.grey[500], size: 22)
-                        : new Icon(Icons.star_border,
-                            color: Colors.grey[500], size: 22)),
-                    Text(
-                      ' Đánh dấu',
-                      style: TextStyle(
-                          color: Colors.grey[500],
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14),
-                    ),
-                  ],
-                ) : Text(''),
+                child: (queryString != '_bookmarked')
+                    ? Row(
+                        children: <Widget>[
+                          ((postInfo.bookmark == 'true')
+                              ? Icon(Icons.star,
+                                  color: Colors.grey[500], size: 22)
+                              : new Icon(Icons.star_border,
+                                  color: Colors.grey[500], size: 22)),
+                          Text(
+                            ' Đánh dấu',
+                            style: TextStyle(
+                                color: Colors.grey[500],
+                                fontWeight: FontWeight.normal,
+                                fontSize: 14),
+                          ),
+                        ],
+                      )
+                    : Text(''),
               ),
             ],
           ),
@@ -161,6 +162,8 @@ class PostListState extends State<PostListView>
     return Container(
       padding: EdgeInsets.only(top: 7, bottom: 2, left: 7),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(100.0),
@@ -174,9 +177,12 @@ class PostListState extends State<PostListView>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                '   ' + postInfo.author,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              Padding(
+                padding: EdgeInsets.only(top: 5),
+                child: Text(
+                  '   ' + postInfo.author,
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 5),
@@ -263,7 +269,8 @@ class PostListState extends State<PostListView>
 
   // handle tap click
   _listOnTap(BuildContext context, PostInfo postInfo) {
-    Navigator.of(context).push(FadeRouteBuilder(page:  new PostDetail(postInfo: postInfo)));
+    Navigator.of(context)
+        .push(FadeRouteBuilder(page: new PostDetail(postInfo: postInfo)));
   }
 
   @override
