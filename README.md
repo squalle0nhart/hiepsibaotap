@@ -12,7 +12,8 @@ Mình biết đến hiepsibaotap cũng chưa lâu lắm nhưng đại để là 
   * Polling ở background và thông báo mỗi khi có bài viết mới.
   * Khi bấm vào tên tác giả thì có thể xem được các bài viết của tác giả đó
   * Thêm mục donate cho page (not me) 
-  ...trong quá trình sử dụng thấy thiếu thì để mình nghĩ thêm. 
+  * Có thể tùy chọn font để đọc, kích thước, màu chữ, các thứ các thứ
+  ...trong quá trình sử dụng thấy thiếu thì từ từ làm tiếp  
 
   <img align='left' src="https://github.com/squalle0nhart/hiepsibaotap/blob/develop/screenshot/Screenshot_20200319-184519.jpg" width="190">
   <img align='left' src="https://github.com/squalle0nhart/hiepsibaotap/blob/develop/screenshot/Screenshot_20200319-184557.jpg" width="190">
