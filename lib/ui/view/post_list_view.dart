@@ -16,44 +16,35 @@ class PostListView extends StatefulWidget {
       : super(key: key);
 
   @override
-  createState() => new PostListState(categoryId, queryString);
+  createState() => new PostListState();
 }
 
 class PostListState extends State<PostListView>
     with AutomaticKeepAliveClientMixin<PostListView>, WidgetsBindingObserver {
   bool enableLoadMore = true;
-  String categoryId;
   PostBloc _postBloc = new PostBloc();
   List<PostInfo> listPosts = new List<PostInfo>();
-
   RefreshController _refreshController;
-  String queryString;
-  PostListState(String categoryId, String queryString) {
-    this.categoryId = categoryId;
-    this.queryString = queryString;
-  }
 
   @override
   void initState() {
     super.initState();
     _refreshController = new RefreshController();
-    _postBloc.getListPost(queryString, categoryId, true);
+    _postBloc.getListPost(widget.queryString, widget.categoryId, true);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
     return StreamBuilder(
       stream: _postBloc.postStream,
       builder: (context, snapshot) {
-        print(snapshot.data.runtimeType.toString());
         if (snapshot.connectionState == ConnectionState.active &&
             snapshot.data.runtimeType == listPosts.runtimeType) {
           listPosts = snapshot.data;
           return SmartRefresher(
             enablePullDown: true,
-            enablePullUp: !(queryString == '_bookmarked'),
+            enablePullUp: !(widget.queryString == '_bookmarked'),
             controller: _refreshController,
             onRefresh: _onRefresh,
             onLoading: _onLoading,
@@ -72,7 +63,7 @@ class PostListState extends State<PostListView>
           );
         } else {
           return Center(
-              child: CircularProgressIndicator(backgroundColor: Colors.blue));
+              child: CircularProgressIndicator());
         }
       },
     );
@@ -116,7 +107,7 @@ class PostListState extends State<PostListView>
               Text('     '),
               InkWell(
                 onTap: () {
-                  if (queryString == '_bookmarked') {
+                  if (widget.queryString == '_bookmarked') {
                     return;
                   }
                   if (postInfo.bookmark == 'true') {
@@ -126,7 +117,7 @@ class PostListState extends State<PostListView>
                   }
                   _postBloc.updatePost(postInfo);
                 },
-                child: (queryString != '_bookmarked')
+                child: (widget.queryString != '_bookmarked')
                     ? Row(
                         children: <Widget>[
                           ((postInfo.bookmark == 'true')
@@ -160,7 +151,7 @@ class PostListState extends State<PostListView>
 
   Widget _buildAuthor(PostInfo postInfo) {
     return Container(
-      padding: EdgeInsets.only(top: 7, bottom: 2, left: 7),
+      padding: EdgeInsets.only(top: 10, bottom: 2, left: 7),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -201,7 +192,8 @@ class PostListState extends State<PostListView>
 
   Widget _buildPreviewImg(PostInfo postInfo) {
     return new Container(
-      padding: EdgeInsets.only(top: 10, bottom: 5, left: 5, right: 5),
+      height: 270,
+      padding: EdgeInsets.only(top: 15, bottom: 10, left: 5, right: 5),
       child: new ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(5)),
         child: new CachedNetworkImage(
@@ -257,13 +249,13 @@ class PostListState extends State<PostListView>
     Future.delayed(const Duration(milliseconds: 500), () {
       _postBloc.currentPage = 0;
       _postBloc.listPosts.clear();
-      _postBloc.getListPost(queryString, categoryId, true);
+      _postBloc.getListPost(widget.queryString, widget.categoryId, true);
       _refreshController.refreshCompleted(resetFooterState: true);
     });
   }
 
   void _onLoading() {
-    _postBloc.getListPost(queryString, categoryId, false);
+    _postBloc.getListPost(widget.queryString, widget.categoryId, false);
     _refreshController.loadComplete();
   }
 

@@ -25,8 +25,9 @@ class PostBloc {
    * Fetch list of category from wordpress API
    */
   void getListPost(String queryString, String categoryId, bool initLoad) async {
+    print('get list post: ' + queryString + '--' + categoryId);
     if (queryString != '' && queryString != null) {
-      print('load query' + queryString.toString());
+      print('do search: ' + queryString);
       Future<List<PostInfo>> fetchList;
       if (queryString == '_bookmarked') {
         fetchList = dbHelper.getListBookmarkPost(categoryId);
@@ -41,17 +42,17 @@ class PostBloc {
             listPosts.add(listFetch[i]);
           }
         }
-
         if (listPosts.length > 0) {
           currentPage++;
           listState = Status.FINISH_LOAD_POST; // set st
         } else {
           listState = Status.LOAD_ERROR;
         }
+        _postStream.sink.add(listPosts);
       });
-      _postStream.sink.add(listPosts);
       return;
     }
+    print('check init load');
 
     if (initLoad) {
       Future<List<PostInfo>> cachingListFuture =
@@ -87,6 +88,7 @@ class PostBloc {
           } else {
             listState = Status.LOAD_ERROR; // set state to error when loading
           }
+          _postStream.sink.add(listPosts);
         });
       });
       initLoad = false;
@@ -109,10 +111,9 @@ class PostBloc {
         } else {
           listState = Status.LOAD_ERROR; // set
         }
+        _postStream.sink.add(listPosts);
       });
     }
-
-    _postStream.sink.add(listPosts);
     return;
   }
 }

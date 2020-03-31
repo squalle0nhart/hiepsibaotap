@@ -18,6 +18,11 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
   AnimationController sliderAnimationController;
   CategoryBloc _categoryBloc = new CategoryBloc();
   List<CategoryInfo> listCategory = new List<CategoryInfo>();
+  int _lastTabIndex = 0;
+  Icon actionIcon = new Icon(Icons.search);
+  final TextEditingController _searchQuery = new TextEditingController();
+  Widget appBarTitle = new Text("Hiệp sĩ bão táp");
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -52,7 +57,13 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
                         snapshot.data.runtimeType == listCategory.runtimeType &&
                         snapshot.data.length > 0) {
                       TabController _tabController = new TabController(
-                          length: snapshot.data.length, vsync: this);
+                          length: snapshot.data.length,
+                          vsync: this,
+                          initialIndex: _lastTabIndex);
+                      // save state of tab index
+                      _tabController.addListener(() {
+                        _lastTabIndex = _tabController.index;
+                      });
                       listCategory = snapshot.data;
                       return Stack(
                         children: <Widget>[
@@ -88,54 +99,7 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
                             child: MediaQuery.removePadding(
                               context: context,
                               removeBottom: true,
-                              child: AppBar(
-                                automaticallyImplyLeading: true,
-                                elevation: 0,
-                                title: Text("Hiệp sĩ bão táp"),
-                                actions: <Widget>[
-                                  IconButton(
-                                    icon: Icon(Icons.help_outline),
-                                    onPressed: () {
-                                      // do search
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.star_half),
-                                    onPressed: () {
-                                      // do search
-                                      Navigator.of(context)
-                                          .push(FadeRouteBuilder(
-                                              page: Scaffold(
-                                                    appBar: AppBar(
-                                                      title: Text('Đánh dấu'),
-                                                    ),
-                                                    body: new PostListView(
-                                                      categoryId: '',
-                                                      queryString:
-                                                          '_bookmarked',
-                                                    ),
-                                                  )));
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.lightbulb_outline),
-                                    onPressed: () {
-                                      // do change theme
-                                      DynamicTheme.of(context).setBrightness(
-                                          Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Brightness.light
-                                              : Brightness.dark);
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.search),
-                                    onPressed: () {
-                                      // do search
-                                    },
-                                  ),
-                                ],
-                              ),
+                              child: buildBar(context),
                             ),
                           ),
                         ],
@@ -168,5 +132,102 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
       ));
     }
     return listTab;
+  }
+
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
+  void _handleSearchEnd() {
+    setState(() {
+      this.actionIcon = new Icon(
+        Icons.search,
+      );
+      this.appBarTitle = new Text(
+        "Hiệp sĩ bão táp",
+      );
+      _isSearching = false;
+      _searchQuery.clear();
+    });
+  }
+
+  Widget buildBar(BuildContext context) {
+    return new AppBar(
+        elevation: 0,
+        centerTitle: false,
+        title: appBarTitle,
+        actions: <Widget>[
+          IconButton(
+            icon: actionIcon,
+            onPressed: () {
+              setState(() {
+                if (this.actionIcon.icon == Icons.search) {
+                  this.actionIcon = new Icon(Icons.close);
+                  this.appBarTitle = new TextField(
+                    controller: _searchQuery,
+                    onSubmitted: (queryString) {
+                      print('subbmit');
+                      if (queryString == '' || queryString == null) return;
+                      _handleSearchEnd();
+                      Navigator.of(context).push(FadeRouteBuilder(
+                          page: Scaffold(
+                        appBar: AppBar(
+                          title: Text('Tìm: "' + queryString + '"'),
+                        ),
+                        body: PostListView(
+                          categoryId: '',
+                          queryString: queryString,
+                        ),
+                      )));
+                    },
+                    decoration: new InputDecoration(
+                      fillColor: Colors.white,
+                      prefixIcon: new Icon(Icons.search, color: Colors.white,),
+                      hintText: "Tìm kiếm",
+                      labelStyle: TextStyle(color: Colors.white),
+                      hintStyle: TextStyle(color: Colors.white)
+                    ),
+                  );
+                  _handleSearchStart();
+                } else {
+                  _handleSearchEnd();
+                }
+              });
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              // do search
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.star_half),
+            onPressed: () {
+              Navigator.of(context).push(FadeRouteBuilder(
+                  page: Scaffold(
+                appBar: AppBar(
+                  title: Text('Đánh dấu'),
+                ),
+                body: new PostListView(
+                  categoryId: '',
+                  queryString: '_bookmarked',
+                ),
+              )));
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.lightbulb_outline),
+            onPressed: () {
+              // do change theme
+              DynamicTheme.of(context).setBrightness(
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Brightness.light
+                      : Brightness.dark);
+            },
+          ),
+        ]);
   }
 }
