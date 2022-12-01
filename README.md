@@ -1,3 +1,6 @@
+# Website 
+https://hiepsibaotap.com/
+
 # Đôi lời chia sẻ
 Mình biết đến hiepsibaotap cũng chưa lâu lắm nhưng đại để là rất thích mấy bài viết trên đó ( thích tới nỗi lục hết hơn 200 pages đọc luôn :v). Mình viết app này phần vì kiểu để "cho vui", phần để chia sẻ cho ae thích đọc có thể xài tiện lợi hơn. 
 
